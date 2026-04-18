@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6; /* Tailwind blue-500 */
+  --color-primary-focus: #2563eb; /* Tailwind blue-600 */
+  --color-secondary: #f43f5e; /* Tailwind rose-500 */
+  --color-background: #0f172a; /* Tailwind slate-900 */
+  --color-surface: #1e293b; /* Tailwind slate-800 */
+  --color-text-main: #f8fafc; /* Tailwind slate-50 */
+  --color-text-muted: #94a3b8; /* Tailwind slate-400 */
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--color-background)] text-[var(--color-text-main)] antialiased min-h-screen;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
