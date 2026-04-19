@@ -1,89 +1,184 @@
-import React from 'react'
-import { Trophy, TrendingUp, Award } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Trophy, TrendingUp, Award, Loader2, Zap, RefreshCw } from 'lucide-react'
+import axios from 'axios'
 
 export function TeamEquity() {
-  const teamMembers = [
-    { id: 1, name: 'Alice Chen', role: 'Lead Developer', totalEquity: '12.5%', points: 1250, trend: '+2.1%', avatar: 'bg-indigo-500' },
-    { id: 2, name: 'Bob Smith', role: 'UI/UX Designer', totalEquity: '8.0%', points: 800, trend: '+1.5%', avatar: 'bg-rose-500' },
-    { id: 3, name: 'Charlie Davis', role: 'Product Manager', totalEquity: '15.0%', points: 1500, trend: '+0.5%', avatar: 'bg-emerald-500' },
-    { id: 4, name: 'Diana Prince', role: 'Backend Dev', totalEquity: '6.5%', points: 650, trend: '+3.2%', avatar: 'bg-amber-500' },
+  const [teamMembers, setTeamMembers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+
+  const colors = [
+    { bg: 'rgba(0,255,163,0.12)', text: '#00FFA3' },
+    { bg: 'rgba(129,140,248,0.12)', text: '#818cf8' },
+    { bg: 'rgba(245,158,11,0.12)', text: '#f59e0b' },
+    { bg: 'rgba(248,113,113,0.12)', text: '#f87171' },
   ]
 
-  // Sort by equity
+  const fetchLeaderboard = async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true)
+    try {
+      const response = await axios.get('http://localhost:5000/api/equity/leaderboard/1')
+      const membersWithColors = response.data.map((member, i) => ({
+        ...member,
+        color: colors[i % colors.length]
+      }))
+      setTeamMembers(membersWithColors)
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchLeaderboard()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center flex-col gap-4">
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#00FFA3' }} />
+        <p className="text-sm" style={{ color: '#333' }}>Loading leaderboard...</p>
+      </div>
+    )
+  }
+
   const sortedMembers = [...teamMembers].sort((a, b) => b.points - a.points)
+  const leader = sortedMembers[0]
+  const totalEquity = sortedMembers.reduce((sum, m) => {
+    const val = parseFloat(m.totalEquity?.replace('%', '') || 0)
+    return sum + val
+  }, 0)
+
+  const medalColors = ['#00FFA3', '#818cf8', '#f59e0b']
+  const medals = ['🥇', '🥈', '🥉']
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+
+      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-white mb-1">Team Equity</h2>
-          <p className="text-slate-400 text-sm">Real-time equity distribution based on completed tasks.</p>
+          <h2 className="text-2xl font-black tracking-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Team Equity</h2>
+          <p className="text-xs mt-1" style={{ color: '#444' }}>Equity distributed automatically when tasks are completed</p>
         </div>
-        <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 flex items-center gap-3">
-          <Trophy className="w-5 h-5 text-amber-400" />
-          <div>
-            <p className="text-xs text-slate-400">Total Pool</p>
-            <p className="font-bold text-slate-200">100.0%</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Top Performer Highlight */}
-        <div className="md:col-span-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl border border-blue-500/30 p-6 flex items-center gap-6">
-          <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center border-4 border-slate-900 shadow-xl">
-            <span className="text-xl font-bold text-white">{sortedMembers[0].name.charAt(0)}</span>
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Award className="w-5 h-5 text-amber-400" />
-              <h3 className="text-lg font-bold text-white">Current Leader: {sortedMembers[0].name}</h3>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <Trophy className="w-4 h-4" style={{ color: '#f59e0b' }} />
+            <div>
+              <p className="text-[10px]" style={{ color: '#444' }}>Total Distributed</p>
+              <p className="text-sm font-black" style={{ color: '#00FFA3' }}>{totalEquity.toFixed(1)}%</p>
             </div>
-            <p className="text-slate-300 text-sm">Has contributed the most value this sprint. Secured {sortedMembers[0].totalEquity} equity.</p>
           </div>
+          <button
+            onClick={() => fetchLeaderboard(true)}
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-all"
+            style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.06)', color: '#444' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#00FFA3'; e.currentTarget.style.borderColor = 'rgba(0,255,163,0.25)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#444'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; }}
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-800/50 border-b border-slate-700 text-slate-400 text-sm uppercase tracking-wider">
-              <th className="p-4 font-semibold">Member</th>
-              <th className="p-4 font-semibold">Role</th>
-              <th className="p-4 font-semibold">Contribution Points</th>
-              <th className="p-4 font-semibold">Total Equity</th>
-              <th className="p-4 font-semibold text-right">Trend</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-700/50">
-            {sortedMembers.map((member) => (
-              <tr key={member.id} className="hover:bg-slate-700/30 transition-colors">
-                <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full ${member.avatar} flex items-center justify-center text-white font-bold text-sm shadow-inner`}>
-                      {member.name.charAt(0)}
-                    </div>
-                    <span className="font-medium text-slate-200">{member.name}</span>
+      {/* Leader Card */}
+      {leader && (
+        <div className="rounded-2xl p-6 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, rgba(0,255,163,0.06) 0%, rgba(0,0,0,0) 60%)',
+          border: '1px solid rgba(0,255,163,0.15)',
+        }}>
+          {/* Glow blob */}
+          <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full pointer-events-none" style={{ background: 'rgba(0,255,163,0.04)', filter: 'blur(30px)' }} />
+          
+          <div className="relative flex items-center gap-5">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black" style={{ background: leader.color?.bg || 'rgba(0,255,163,0.12)', color: leader.color?.text || '#00FFA3', border: '1px solid rgba(0,255,163,0.2)' }}>
+                {leader.name?.charAt(0) || 'A'}
+              </div>
+              <div className="absolute -top-2 -right-2 text-lg">🏆</div>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <Zap className="w-4 h-4" style={{ color: '#00FFA3' }} />
+                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#00FFA3' }}>Current Leader</p>
+              </div>
+              <h3 className="text-xl font-black text-white mb-0.5" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{leader.name}</h3>
+              <p className="text-xs" style={{ color: '#555' }}>{leader.role} · Secured <span className="font-bold" style={{ color: '#00FFA3' }}>{leader.totalEquity}</span> equity</p>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-black" style={{ color: '#00FFA3', textShadow: '0 0 30px rgba(0,255,163,0.4)' }}>{leader.totalEquity}</p>
+              <p className="text-xs" style={{ color: '#444' }}>of the pool</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Leaderboard Table */}
+      <div className="rounded-xl overflow-hidden" style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="px-5 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
+          <div className="grid grid-cols-12 text-xs font-bold uppercase tracking-widest" style={{ color: '#2a2a2a' }}>
+            <span className="col-span-1">#</span>
+            <span className="col-span-4">Member</span>
+            <span className="col-span-3">Role</span>
+            <span className="col-span-2">Points</span>
+            <span className="col-span-2 text-right">Equity</span>
+          </div>
+        </div>
+
+        {sortedMembers.length === 0 ? (
+          <div className="py-16 flex flex-col items-center justify-center" style={{ color: '#2a2a2a' }}>
+            <Award className="w-10 h-10 mb-3" />
+            <p className="text-sm font-semibold">No data yet</p>
+            <p className="text-xs mt-1">Complete a task to see equity distributed here</p>
+          </div>
+        ) : (
+          <div className="divide-y" style={{ borderColor: 'rgba(255,255,255,0.03)' }}>
+            {sortedMembers.map((member, idx) => (
+              <div key={member.id}
+                className="px-5 py-3 grid grid-cols-12 items-center transition-all"
+                style={{ background: idx === 0 ? 'rgba(0,255,163,0.02)' : 'transparent' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#111'}
+                onMouseLeave={e => e.currentTarget.style.background = idx === 0 ? 'rgba(0,255,163,0.02)' : 'transparent'}
+              >
+                <span className="col-span-1 text-sm font-black" style={{ color: medalColors[idx] || '#333' }}>
+                  {medals[idx] || `${idx + 1}`}
+                </span>
+
+                <div className="col-span-4 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm" style={{ background: member.color?.bg || 'rgba(255,255,255,0.05)', color: member.color?.text || '#555' }}>
+                    {member.name?.charAt(0) || '?'}
                   </div>
-                </td>
-                <td className="p-4 text-slate-400">{member.role}</td>
-                <td className="p-4 font-mono text-slate-300">{member.points} pts</td>
-                <td className="p-4">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold">
+                  <span className="text-sm font-semibold text-white">{member.name}</span>
+                </div>
+
+                <span className="col-span-3 text-xs" style={{ color: '#444' }}>{member.role}</span>
+
+                <div className="col-span-2">
+                  <span className="text-sm font-mono font-bold text-white">{member.points.toLocaleString()}</span>
+                  <span className="text-xs ml-1" style={{ color: '#333' }}>pts</span>
+                </div>
+
+                <div className="col-span-2 flex flex-col items-end gap-1">
+                  <span className="text-sm font-black px-2.5 py-0.5 rounded-lg" style={{ background: 'rgba(0,255,163,0.08)', color: '#00FFA3', border: '1px solid rgba(0,255,163,0.15)' }}>
                     {member.totalEquity}
                   </span>
-                </td>
-                <td className="p-4 text-right">
-                  <div className="flex items-center justify-end gap-1 text-emerald-400 font-medium text-sm">
-                    <TrendingUp className="w-4 h-4" />
-                    {member.trend}
+                  <div className="flex items-center gap-0.5 text-xs" style={{ color: '#00cc82' }}>
+                    <TrendingUp className="w-3 h-3" />
+                    <span>{member.trend}</span>
                   </div>
-                </td>
-              </tr>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        )}
       </div>
+
+      {/* Footer hint */}
+      <p className="text-center text-xs" style={{ color: '#1f1f1f' }}>
+        Equity updates automatically · Drag tasks to Done on the Task Board
+      </p>
     </div>
   )
 }

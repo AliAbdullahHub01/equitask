@@ -1,18 +1,113 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @theme {
-  --color-primary: #3b82f6; /* Tailwind blue-500 */
-  --color-primary-focus: #2563eb; /* Tailwind blue-600 */
-  --color-secondary: #f43f5e; /* Tailwind rose-500 */
-  --color-background: #0f172a; /* Tailwind slate-900 */
-  --color-surface: #1e293b; /* Tailwind slate-800 */
-  --color-text-main: #f8fafc; /* Tailwind slate-50 */
-  --color-text-muted: #94a3b8; /* Tailwind slate-400 */
+  --color-neon: #00FFA3;
+  --color-neon-dim: #00cc82;
+  --color-neon-glow: rgba(0, 255, 163, 0.15);
+  --color-neon-border: rgba(0, 255, 163, 0.3);
+  --color-bg: #020202;
+  --color-surface: #0d0d0d;
+  --color-surface-2: #141414;
+  --color-surface-3: #1a1a1a;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-hover: rgba(255, 255, 255, 0.12);
+  --color-text-main: #f0f0f0;
+  --color-text-muted: #555;
+  --color-text-subtle: #333;
 }
 
 @layer base {
-  body {
-    @apply bg-[var(--color-background)] text-[var(--color-text-main)] antialiased min-h-screen;
-    font-family: 'Inter', system-ui, sans-serif;
+  * {
+    box-sizing: border-box;
   }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    background-image: 
+      linear-gradient(rgba(0, 255, 163, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 163, 0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  ::selection {
+    background-color: rgba(0, 255, 163, 0.2);
+    color: #00FFA3;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1f1f1f;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00FFA3;
+  }
+}
+
+@layer utilities {
+  .neon-text {
+    color: #00FFA3;
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(0, 255, 163, 0.25), 0 0 60px rgba(0, 255, 163, 0.08);
+  }
+
+  .neon-border {
+    border-color: rgba(0, 255, 163, 0.3);
+  }
+
+  .neon-btn {
+    background: #00FFA3;
+    color: #020202;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 163, 0.3);
+  }
+
+  .neon-btn:hover {
+    background: #00ffb3;
+    box-shadow: 0 0 30px rgba(0, 255, 163, 0.5), 0 0 60px rgba(0, 255, 163, 0.2);
+    transform: translateY(-1px);
+  }
+
+  .glass-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    backdrop-filter: blur(12px);
+  }
+
+  .glass-card:hover {
+    border-color: var(--color-border-hover);
+  }
+
+  .animate-pulse-neon {
+    animation: pulseNeon 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulseNeon {
+  0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(0,255,163,0.3); }
+  50% { opacity: 0.7; box-shadow: 0 0 25px rgba(0,255,163,0.6); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
 }

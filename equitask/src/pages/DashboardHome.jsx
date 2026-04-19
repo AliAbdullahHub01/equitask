@@ -1,24 +1,82 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
+import { CheckSquare, Users, FolderKanban, Zap, ArrowRight } from 'lucide-react'
 
 export function DashboardHome() {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { label: 'Total Tasks', value: '12' },
-          { label: 'Completed', value: '5' },
-          { label: 'Pending', value: '7' },
-        ].map((stat, i) => (
-          <div key={i} className="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-            <h3 className="text-slate-400 text-sm font-medium mb-2">{stat.label}</h3>
-            <p className="text-3xl font-bold text-white">{stat.value}</p>
-          </div>
-        ))}
+    <div className="space-y-8">
+
+      {/* Welcome */}
+      <div className="rounded-2xl p-8 relative overflow-hidden" style={{
+        background: 'linear-gradient(135deg, rgba(0,255,163,0.06) 0%, rgba(0,0,0,0) 70%)',
+        border: '1px solid rgba(0,255,163,0.12)'
+      }}>
+        <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'rgba(0,255,163,0.03)', filter: 'blur(40px)' }} />
+        <div className="relative">
+          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#00FFA3' }}>Welcome back</p>
+          <h2 className="text-3xl font-black tracking-tight mb-3" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Hey, Ali 👋</h2>
+          <p className="text-sm" style={{ color: '#555' }}>Your EquiTask dashboard is live. Drag tasks to Done to earn equity automatically.</p>
+          <Link to="/dashboard/tasks"
+            className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-lg text-sm font-black transition-all"
+            style={{ background: '#00FFA3', color: '#020202', boxShadow: '0 0 20px rgba(0,255,163,0.25)' }}
+            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 35px rgba(0,255,163,0.45)'}
+            onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 20px rgba(0,255,163,0.25)'}
+          >
+            Go to Task Board <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
-      
-      <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 min-h-[400px]">
-        <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
-        <p className="text-slate-400 text-sm">No activity to show yet. Awaiting backend implementation.</p>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          { label: 'Total Tasks', value: '—', icon: CheckSquare, color: '#00FFA3' },
+          { label: 'Team Members', value: '—', icon: Users, color: '#818cf8' },
+          { label: 'Projects', value: '1', icon: FolderKanban, color: '#f59e0b' },
+        ].map((stat, i) => {
+          const Icon = stat.icon;
+          return (
+            <div key={i} className="p-5 rounded-xl" style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#333' }}>{stat.label}</p>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${stat.color}15` }}>
+                  <Icon className="w-4 h-4" style={{ color: stat.color }} />
+                </div>
+              </div>
+              <p className="text-3xl font-black" style={{ color: stat.color }}>{stat.value}</p>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Quick links */}
+      <div className="rounded-xl p-5" style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#333' }}>Quick Actions</p>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: 'Task Board', desc: 'Manage and move tasks', path: '/dashboard/tasks', icon: CheckSquare },
+            { label: 'Team Equity', desc: 'View leaderboard', path: '/dashboard/equity', icon: Zap },
+          ].map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <Link key={i} to={item.path}
+                className="flex items-center gap-3 p-4 rounded-xl transition-all"
+                style={{ background: '#111', border: '1px solid rgba(255,255,255,0.04)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,255,163,0.2)'; e.currentTarget.style.background = 'rgba(0,255,163,0.03)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)'; e.currentTarget.style.background = '#111'; }}
+              >
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'rgba(0,255,163,0.08)' }}>
+                  <Icon className="w-4 h-4" style={{ color: '#00FFA3' }} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">{item.label}</p>
+                  <p className="text-xs" style={{ color: '#444' }}>{item.desc}</p>
+                </div>
+                <ArrowRight className="w-4 h-4 ml-auto" style={{ color: '#2a2a2a' }} />
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   )

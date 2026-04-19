@@ -11,4 +11,7 @@ router.post('/', tasksController.createTask);
 // Get all tasks for a project
 router.get('/project/:projectId', tasksController.getTasksByProject);
 
+// Update task status (without completing)
+router.put('/:taskId', tasksController.updateTaskStatus);
+
 module.exports = router;
