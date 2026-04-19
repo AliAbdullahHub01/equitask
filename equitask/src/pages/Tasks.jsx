@@ -31,7 +31,11 @@ export function Tasks() {
     if (!newTaskTitle.trim()) return
 
     try {
-      const projectId = tasks.length > 0 ? tasks[0].project_id : '1'
+      const projectId = tasks.length > 0 ? tasks[0].project_id : null
+      if (!projectId) {
+        console.error('No project loaded yet — cannot add task without a valid project.')
+        return
+      }
       await axios.post('http://localhost:5000/api/tasks', {
         title: newTaskTitle,
         projectId,
@@ -80,6 +84,17 @@ export function Tasks() {
         await axios.post(`http://localhost:5000/api/tasks/${task.id}/complete`, {
           userName: 'Ali'
         })
+        
+        // Celebration!
+        if (window.confetti) {
+          window.confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#00FFA3', '#ffffff', '#00cc82']
+          });
+        }
+        
         setCompleting(null)
       } else {
         await axios.put(`http://localhost:5000/api/tasks/${task.id}`, { status: columnId })

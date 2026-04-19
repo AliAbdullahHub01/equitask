@@ -1,15 +1,22 @@
 const { supabase } = require('../config/supabase');
 
+// Helper to validate UUID format
+const isValidUUID = (str) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
 exports.getLeaderboard = async (req, res, next) => {
   try {
     const { projectId } = req.params;
-    
-    // Fetch all members for the project
-    const { data, error } = await supabase
-      .from('project_members')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('points', { ascending: false });
+
+    let query = supabase.from('project_members').select('*').order('points', { ascending: false });
+
+    // Only filter by project_id if it's a valid UUID — otherwise fetch all members
+    if (isValidUUID(projectId)) {
+      query = query.eq('project_id', projectId);
+    } else {
+      console.log(`projectId "${projectId}" is not a valid UUID — fetching all members across projects.`);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error("Error fetching leaderboard:", error);

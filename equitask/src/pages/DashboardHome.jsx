@@ -1,8 +1,24 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { CheckSquare, Users, FolderKanban, Zap, ArrowRight } from 'lucide-react'
+import axios from 'axios'
 
 export function DashboardHome() {
+  const [taskCount, setTaskCount] = useState('...')
+  const [memberCount, setMemberCount] = useState('...')
+
+  useEffect(() => {
+    // Fetch task count
+    axios.get('http://localhost:5000/api/tasks/project/1')
+      .then(res => setTaskCount(res.data.length))
+      .catch(() => setTaskCount('—'))
+
+    // Fetch team member count
+    axios.get('http://localhost:5000/api/equity/leaderboard/1')
+      .then(res => setMemberCount(res.data.length))
+      .catch(() => setMemberCount('—'))
+  }, [])
+
   return (
     <div className="space-y-8">
 
@@ -30,8 +46,8 @@ export function DashboardHome() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: 'Total Tasks', value: '—', icon: CheckSquare, color: '#00FFA3' },
-          { label: 'Team Members', value: '—', icon: Users, color: '#818cf8' },
+          { label: 'Total Tasks', value: taskCount, icon: CheckSquare, color: '#00FFA3' },
+          { label: 'Team Members', value: memberCount, icon: Users, color: '#818cf8' },
           { label: 'Projects', value: '1', icon: FolderKanban, color: '#f59e0b' },
         ].map((stat, i) => {
           const Icon = stat.icon;

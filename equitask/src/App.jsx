@@ -8,6 +8,7 @@ import { DashboardHome } from './pages/DashboardHome'
 import { Projects } from './pages/Projects'
 import { Tasks } from './pages/Tasks'
 import { TeamEquity } from './pages/TeamEquity'
+import { Settings } from './pages/Settings'
 
 // Create a client for React Query
 const queryClient = new QueryClient()
@@ -27,7 +28,7 @@ function App() {
             <Route path="projects" element={<Projects />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="equity" element={<TeamEquity />} />
-            <Route path="settings" element={<div className="text-white">Settings Page (Coming Soon)</div>} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </BrowserRouter>
