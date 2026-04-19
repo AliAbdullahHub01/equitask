@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Folder, MoreVertical, Plus, Loader2, ArrowUpRight, Target } from 'lucide-react'
 import axios from 'axios'
+import API_URL from '../api'
 
 export function Projects() {
   const [projects, setProjects] = useState([])
@@ -9,7 +10,7 @@ export function Projects() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/projects')
+        const response = await axios.get(`${API_URL}/projects`)
         setProjects(response.data)
       } catch (error) {
         console.error("Error fetching projects:", error)

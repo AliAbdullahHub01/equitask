@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Plus, MessageSquare, Loader2, X, GripVertical } from 'lucide-react'
 import axios from 'axios'
+import API_URL from '../api'
 
 export function Tasks() {
   const [tasks, setTasks] = useState([])
@@ -13,7 +14,7 @@ export function Tasks() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks/project/1')
+      const response = await axios.get(`${API_URL}/tasks/project/1`)
       setTasks(response.data)
     } catch (error) {
       console.error("Error fetching tasks:", error)
@@ -36,7 +37,7 @@ export function Tasks() {
         console.error('No project loaded yet — cannot add task without a valid project.')
         return
       }
-      await axios.post('http://localhost:5000/api/tasks', {
+      await axios.post(`${API_URL}/tasks`, {
         title: newTaskTitle,
         projectId,
         equityValue: parseFloat(newTaskEquity)
@@ -81,7 +82,7 @@ export function Tasks() {
     try {
       if (columnId === 'done') {
         setCompleting(task.id)
-        await axios.post(`http://localhost:5000/api/tasks/${task.id}/complete`, {
+        await axios.post(`${API_URL}/tasks/${task.id}/complete`, {
           userName: 'Ali'
         })
         
@@ -97,7 +98,7 @@ export function Tasks() {
         
         setCompleting(null)
       } else {
-        await axios.put(`http://localhost:5000/api/tasks/${task.id}`, { status: columnId })
+        await axios.put(`${API_URL}/tasks/${task.id}`, { status: columnId })
       }
       fetchTasks()
     } catch (error) {

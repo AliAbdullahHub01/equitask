@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Trophy, TrendingUp, Award, Loader2, Zap, RefreshCw } from 'lucide-react'
 import axios from 'axios'
+import API_URL from '../api'
 
 export function TeamEquity() {
   const [teamMembers, setTeamMembers] = useState([])
@@ -17,7 +18,7 @@ export function TeamEquity() {
   const fetchLeaderboard = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true)
     try {
-      const response = await axios.get('http://localhost:5000/api/equity/leaderboard/1')
+      const response = await axios.get(`${API_URL}/equity/leaderboard/1`)
       const membersWithColors = response.data.map((member, i) => ({
         ...member,
         color: colors[i % colors.length]

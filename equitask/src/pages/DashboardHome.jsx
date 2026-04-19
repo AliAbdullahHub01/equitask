@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { CheckSquare, Users, FolderKanban, Zap, ArrowRight } from 'lucide-react'
 import axios from 'axios'
+import API_URL from '../api'
 
 export function DashboardHome() {
   const [taskCount, setTaskCount] = useState('...')
@@ -9,12 +10,12 @@ export function DashboardHome() {
 
   useEffect(() => {
     // Fetch task count
-    axios.get('http://localhost:5000/api/tasks/project/1')
+    axios.get(`${API_URL}/tasks/project/1`)
       .then(res => setTaskCount(res.data.length))
       .catch(() => setTaskCount('—'))
 
     // Fetch team member count
-    axios.get('http://localhost:5000/api/equity/leaderboard/1')
+    axios.get(`${API_URL}/equity/leaderboard/1`)
       .then(res => setMemberCount(res.data.length))
       .catch(() => setMemberCount('—'))
   }, [])
